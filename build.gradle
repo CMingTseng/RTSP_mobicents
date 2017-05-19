@@ -1,0 +1,55 @@
+apply plugin: 'java'
+apply plugin: 'application'
+
+version = '1.0'
+sourceCompatibility = 1.8
+targetCompatibility = 1.8
+
+mainClassName = 'org.mobicents.rtsp.example.Server'
+
+jar {
+    manifest {
+        attributes 'Implementation-Title': 'RTSP Server Examples', 'Implementation-Version': version,
+                'Main-Class': mainClassName
+    }
+}
+
+run {
+    standardInput = System.in
+}
+
+//https://www.mkyong.com/gradle/gradle-create-a-jar-file-with-dependencies/
+//create a single Jar with all dependencies
+task fatJar(type: Jar) {
+    manifest {
+        attributes 'Implementation-Title': 'RTSP Client Examples',
+                'Implementation-Version': version,
+                'Main-Class': 'org.mobicents.rtsp.example.Clinet'
+    }
+    baseName = project.name + '-all'
+    from { configurations.compile.collect { it.isDirectory() ? it : zipTree(it) } }
+    with jar
+}
+
+repositories {
+    mavenCentral()
+    jcenter()
+    flatDir {
+        dirs 'libs'
+    }
+}
+
+dependencies {
+    compile fileTree(dir: 'libs', include: ['*.jar'])
+    testCompile group: 'junit', name: 'junit', version: '4.11'
+ }
+
+allprojects {
+    repositories {
+        jcenter()
+        mavenCentral()
+        flatDir {
+            dirs 'libs'
+        }
+    }
+}
